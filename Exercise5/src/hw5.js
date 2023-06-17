@@ -14,13 +14,45 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-// Add here the rendering of your goal
+// The goalposts.
+const goalMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
+const postThickness = 0.1;
+
+// Left post.
+const leftPostGeometry = new THREE.BoxGeometry(postThickness, 1, postThickness);
+const leftPost = new THREE.Mesh(leftPostGeometry, goalMaterial);
+leftPost.position.x = -1;
+scene.add(leftPost);
+
+// Right post.
+const rightPostGeometry = new THREE.BoxGeometry(postThickness, 1, postThickness);
+const rightPost = new THREE.Mesh(rightPostGeometry, goalMaterial);
+rightPost.position.x = 1;
+scene.add(rightPost);
+
+// Crossbar.
+const crossbarGeometry = new THREE.BoxGeometry(2 + postThickness, postThickness, postThickness);
+const crossbar = new THREE.Mesh(crossbarGeometry, goalMaterial);
+crossbar.position.y = 0.5;
+scene.add(crossbar);
+
+// The net.
+const netGeometry = new THREE.BoxGeometry(2, 1, postThickness);
+const netMaterial = new THREE.MeshBasicMaterial({
+    color: 0xFFFFFF,
+    transparent: true,
+    opacity: 0.5
+});
+const net = new THREE.Mesh(netGeometry, netMaterial);
+net.position.z = -0.05;
+scene.add(net);
+
 
 // This is a sample box.
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( {color: 0x000000} );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+// const material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+// const cube = new THREE.Mesh( geometry, material );
+// scene.add( cube );
 
 
 // This defines the initial distance of the camera
