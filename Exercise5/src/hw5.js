@@ -14,38 +14,107 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-// The goalposts.
-const goalMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
-const postThickness = 0.1;
 
-// Left post.
-const leftPostGeometry = new THREE.BoxGeometry(postThickness, 1, postThickness);
-const leftPost = new THREE.Mesh(leftPostGeometry, goalMaterial);
-leftPost.position.x = -1;
-scene.add(leftPost);
+const cylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
+const whiteMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
+const goalpost = new THREE.Mesh(cylinderGeometry, whiteMaterial);
+scene.add(goalpost);
 
-// Right post.
-const rightPostGeometry = new THREE.BoxGeometry(postThickness, 1, postThickness);
-const rightPost = new THREE.Mesh(rightPostGeometry, goalMaterial);
-rightPost.position.x = 1;
-scene.add(rightPost);
+// Create the torus at the bottom of the goalpost
+const torusGeometry = new THREE.TorusGeometry(0.1, 0.02, 16, 100);
+const torus = new THREE.Mesh(torusGeometry, whiteMaterial);
 
-// Crossbar.
-const crossbarGeometry = new THREE.BoxGeometry(2 + postThickness, postThickness, postThickness);
-const crossbar = new THREE.Mesh(crossbarGeometry, goalMaterial);
-crossbar.position.y = 0.5;
+// Rotate the torus 90 degrees around the x-axis to make it orthogonal to the goalpost
+const rotationMatrix = new THREE.Matrix4();
+rotationMatrix.makeRotationX(Math.PI / 2);
+torus.applyMatrix4(rotationMatrix);
+
+// Translate the torus to the bottom of the goalpost
+const translationMatrix = new THREE.Matrix4();
+translationMatrix.makeTranslation(0, -1, 0);  // assuming the goalpost's height is 2
+torus.applyMatrix4(translationMatrix);
+
+scene.add(torus);
+
+
+const secondGoalpost = goalpost.clone();
+const secondTorus = torus.clone();
+
+// Translate the second goalpost and torus to the right
+const secondGoalpostPosition = new THREE.Matrix4();
+secondGoalpostPosition.makeTranslation(1, 0, 0); // 1 unit to the right, adjust as necessary
+secondGoalpost.applyMatrix4(secondGoalpostPosition);
+secondTorus.applyMatrix4(secondGoalpostPosition);
+
+scene.add(secondGoalpost);
+scene.add(secondTorus);
+
+// Create the cylinder for the crossbar
+const crossbarGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 32); // adjust dimensions as necessary
+const crossbar = new THREE.Mesh(crossbarGeometry, whiteMaterial);
+
+// Rotate the crossbar 90 degrees around the z-axis to make it horizontal
+const crossbarRotation = new THREE.Matrix4();
+crossbarRotation.makeRotationZ(Math.PI / 2);
+crossbar.applyMatrix4(crossbarRotation);
+
+// Translate the crossbar to the top of the goalposts
+const crossbarPosition = new THREE.Matrix4();
+crossbarPosition.makeTranslation(0.5, 1, 0); // halfway between the goalposts and at their top, adjust as necessary
+crossbar.applyMatrix4(crossbarPosition);
+
 scene.add(crossbar);
 
-// The net.
-const netGeometry = new THREE.BoxGeometry(2, 1, postThickness);
-const netMaterial = new THREE.MeshBasicMaterial({
-    color: 0xFFFFFF,
-    transparent: true,
-    opacity: 0.5
-});
-const net = new THREE.Mesh(netGeometry, netMaterial);
-net.position.z = -0.05;
-scene.add(net);
+// Create the cylinder for the first back support
+const backSupportGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32); // adjust dimensions as necessary
+const firstBackSupport = new THREE.Mesh(backSupportGeometry, whiteMaterial);
+
+// Rotate the first back support to make it diagonal
+// const backSupportRotation = new THREE.Matrix4();
+// backSupportRotation.makeRotationZ(degrees_to_radians(40)); // 40 degrees, adjust as necessary
+// backSupportRotation.makeRotationX(degrees_to_radians(40)); // 40 degrees, adjust as necessary
+// firstBackSupport.applyMatrix4(backSupportRotation);
+
+// Rotate the first back support to make it diagonal
+const backSupportRotation = new THREE.Matrix4();
+
+// Create a rotation matrix with a 35° angle (converted to radians)
+backSupportRotation.makeRotationX(degrees_to_radians(35));
+firstBackSupport.applyMatrix4(backSupportRotation);
+
+
+// Translate the first back support to the right place
+const firstBackSupportPosition = new THREE.Matrix4();
+firstBackSupportPosition.makeTranslation(1, 0.18, -.575); // 1 unit to the right, adjust as necessary
+firstBackSupport.applyMatrix4(firstBackSupportPosition);
+
+scene.add(firstBackSupport);
+
+// Create the torus at the bottom of the first back support
+const firstBackSupportTorus = new THREE.Mesh(torusGeometry, whiteMaterial);
+
+// Rotate and translate the torus to the right place
+firstBackSupportTorus.applyMatrix4(backSupportRotation);
+firstBackSupportTorus.applyMatrix4(firstBackSupportPosition);
+
+scene.add(firstBackSupportTorus);
+
+// Create, rotate, and translate the second back support in a similar way
+const secondBackSupport = firstBackSupport.clone();
+const secondBackSupportTorus = firstBackSupportTorus.clone();
+
+const secondBackSupportPosition = new THREE.Matrix4();
+secondBackSupportPosition.makeTranslation(-2, 0, 0); // 2 units to the left, adjust as necessary
+secondBackSupport.applyMatrix4(secondBackSupportPosition);
+secondBackSupportTorus.applyMatrix4(secondBackSupportPosition);
+
+scene.add(secondBackSupport);
+scene.add(secondBackSupportTorus);
+
+
+
+
+
 
 
 // This is a sample box.
